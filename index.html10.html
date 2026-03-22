@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Anamnese UFPE</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:#0A0E1A;color:#E8EAF0}
+
+:root{
+  --bg:#0A0E1A;
+  --bg2:#111827;
+  --bg3:#1A2235;
+  --surface:#16202F;
+  --surface2:#1E2D42;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.13);
+  --text:#E8EAF0;
+  --text2:#8B95A8;
+  --text3:#4A5568;
+  --gold:#C9A84C;
+  --gold-l:rgba(201,168,76,0.12);
+  --blue:#4A90D9;
+  --blue-l:rgba(74,144,217,0.15);
+  --green:#3DAA6E;
+  --green-l:rgba(61,170,110,0.15);
+  --red:#E05252;
+  --red-l:rgba(224,82,82,0.15);
+  --purple:#8B7BE8;
+  --purple-l:rgba(139,123,232,0.15);
+  --amber:#E09644;
+  --amber-l:rgba(224,150,68,0.15);
+  --teal:#38B2AC;
+  --teal-l:rgba(56,178,172,0.15);
+  --rose:#E07AA0;
+  --rose-l:rgba(224,122,160,0.15);
+  --cyan:#38BDF8;
+  --cyan-l:rgba(56,189,248,0.15);
+  --r:14px;--rs:10px;--rp:100px;
+}
+
+.view{display:none;height:100%;flex-direction:column}
+.view.active{display:flex}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{width:3px}
+.scroll::-webkit-scrollbar-track{background:transparent}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* BOTTOM NAV */
+.bnav{flex-shrink:0;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:10px 8px calc(10px + env(safe-area-inset-bottom))}
+.nb{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 18px;border:none;background:none;cursor:pointer;border-radius:var(--rs);font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;transition:all .2s}
+.nb svg{width:20px;height:20px;stroke:var(--text3);fill:none;stroke-width:1.8;transition:stroke .2s}
+.nb span{font-size:10px;color:var(--text3);transition:color .2s;letter-spacing:.03em}
+.nb.on{background:rgba(201,168,76,0.08)}
+.nb.on svg{stroke:var(--gold)}
+.nb.on span{color:var(--gold);font-weight:500}
+
+/* HEADER */
+.hd{padding:1.5rem 1.25rem .75rem}
+.hd-row{display:flex;align-items:flex-start;justify-content:space-between}
+.hd h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--text);margin-bottom:4px;letter-spacing:-.02em}
+.hd p{font-size:13px;color:var(--text2)}
+
+/* UFPE LOGO */
+.ufpe-logo{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ufpe-logo span{font-size:9px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:.5rem 1.25rem 1.25rem}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;position:relative;overflow:hidden;animation:fadeUp .4s ease both}
+.mc:nth-child(1){animation-delay:.05s}.mc:nth-child(2){animation-delay:.1s}
+.mc:nth-child(3){animation-delay:.15s}.mc:nth-child(4){animation-delay:.2s}
+.mc-glow{position:absolute;top:0;left:0;right:0;height:1px;opacity:.6}
+.mi{font-size:20px;margin-bottom:8px}
+.ml{font-size:10px;color:var(--text3);margin-bottom:3px;letter-spacing:.04em;text-transform:uppercase}
+.mv{font-size:26px;font-weight:300;line-height:1;color:var(--text)}
+.mu{font-size:11px;color:var(--text2);margin-top:3px}
+.mt{display:inline-flex;align-items:center;font-size:10px;margin-top:7px;padding:2px 8px;border-radius:var(--rp);font-weight:500;letter-spacing:.02em}
+
+/* SECTION */
+.sec{padding:0 1.25rem;margin-bottom:1.25rem}
+.sec-t{font-size:10px;font-weight:500;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-t::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:10px}
+
+/* SPECIALTY TABS */
+.spec-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.spec-tabs::-webkit-scrollbar{display:none}
+.stab{padding:10px 18px;font-size:13px;font-weight:400;color:var(--text2);border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;transition:all .2s;-webkit-tap-highlight-color:transparent;flex-shrink:0;letter-spacing:.02em}
+.stab.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:500}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.25rem}
+.chip{padding:8px 15px;border-radius:var(--rp);border:1px solid var(--border2);font-size:13px;color:var(--text2);cursor:pointer;background:transparent;transition:all .2s;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;letter-spacing:.01em}
+
+/* DIFFS */
+.diffs{display:flex;gap:8px;margin-bottom:1.5rem}
+.diff{flex:1;padding:12px 8px;border-radius:var(--rs);border:1px solid var(--border2);font-size:13px;color:var(--text2);cursor:pointer;background:transparent;transition:all .2s;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;text-align:center}
+.diff.on{border-color:var(--gold);background:var(--gold-l);color:var(--gold);font-weight:500}
+
+/* START BTN */
+.go{width:100%;padding:16px;background:linear-gradient(135deg,#1a3a6e,#0d2347);color:#fff;border:1px solid rgba(74,144,217,0.3);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;letter-spacing:.03em;position:relative;overflow:hidden;transition:all .2s}
+.go::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.15),transparent);opacity:0;transition:opacity .2s}
+.go:active::after{opacity:1}
+.go:active{transform:scale(.98)}
+
+/* SESSIONS */
+.sess{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.sess:last-child{border-bottom:none;padding-bottom:0}
+.sess:first-child{padding-top:0}
+.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;border:1px solid var(--border2)}
+.si{flex:1;min-width:0}
+.sn{font-size:14px;font-weight:500;color:var(--text)}
+.sm{font-size:12px;color:var(--text2);margin-top:2px}
+.sbadge{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:var(--rp);margin-top:5px;background:var(--green-l);color:var(--green);border:1px solid rgba(61,170,110,0.2)}
+.ss{display:flex;gap:12px;flex-shrink:0}
+.sb2{text-align:center}
+.snum{font-size:17px;font-weight:300;color:var(--text);line-height:1}
+.slbl{font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+
+/* TIPS */
+.tip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:10px;position:relative;overflow:hidden}
+.tip-accent{position:absolute;left:0;top:0;bottom:0;width:3px}
+.tip-tag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.tip-txt{font-size:13px;color:var(--text2);line-height:1.65}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:2.5rem 1.25rem}
+.empty-state .ei{font-size:28px;margin-bottom:10px;opacity:.5}
+.empty-state .et{font-size:14px;font-weight:500;color:var(--text2);margin-bottom:4px}
+.empty-state .ed{font-size:13px;color:var(--text3);line-height:1.5}
+
+/* SIMULATOR */
+#sim{background:var(--bg)}
+.sim-hd{flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 1.25rem;padding-top:calc(.875rem + env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+.sim-back{background:none;border:none;padding:8px;margin:-8px;cursor:pointer;border-radius:50%;-webkit-tap-highlight-color:transparent;display:flex;align-items:center}
+.sim-back:active{background:var(--surface2)}
+.sim-back svg{width:22px;height:22px;stroke:var(--text2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sim-info{flex:1;min-width:0}
+.sim-title{font-family:'Playfair Display',serif;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.sim-meta{font-size:11px;color:var(--text3);margin-top:1px}
+.sim-end{flex-shrink:0;background:none;border:1px solid var(--border2);border-radius:var(--rs);padding:8px 14px;font-size:13px;color:var(--amber);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.sim-end:active{background:var(--amber-l)}
+
+.chat-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:14px}
+.chat-wrap::-webkit-scrollbar{width:3px}
+.chat-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+.msg{display:flex;gap:9px;align-items:flex-end;animation:fadeUp .2s ease both}
+.msg.user{flex-direction:row-reverse}
+.mav{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:1px solid var(--border2)}
+.mbub{max-width:78%;padding:11px 16px;border-radius:18px;font-size:14px;line-height:1.6}
+.msg.patient .mbub{background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text)}
+.msg.user .mbub{background:linear-gradient(135deg,#1a3a6e,#0d2347);color:#fff;border:1px solid rgba(74,144,217,0.2);border-bottom-right-radius:4px}
+
+.intro-box{background:var(--bg3);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:14px 16px;font-size:14px;color:var(--gold);line-height:1.6;font-style:italic}
+
+.typing{display:flex;gap:9px;align-items:flex-end}
+.dots{display:flex;gap:5px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:18px;border-bottom-left-radius:4px}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bou 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+
+.inp-wrap{flex-shrink:0;background:var(--surface);border-top:1px solid var(--border);padding:.875rem 1.25rem;padding-bottom:calc(.875rem + env(safe-area-inset-bottom));display:flex;gap:10px;align-items:flex-end}
+.inp{flex:1;border:1px solid var(--border2);border-radius:22px;padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg3);outline:none;resize:none;line-height:1.4;max-height:100px;transition:border-color .2s}
+.inp:focus{border-color:rgba(201,168,76,.4)}
+.inp::placeholder{color:var(--text3)}
+.send{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a3a6e,#0d2347);border:1px solid rgba(74,144,217,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.send:active{transform:scale(.92)}
+.send:disabled{background:var(--surface2);border-color:var(--border);cursor:not-allowed}
+.send svg{width:16px;height:16px;fill:#fff}
+
+/* FEEDBACK */
+.fb-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-top:4px;animation:fadeUp .3s ease both}
+
+/* Score hero */
+.fb-hero{border-radius:var(--r);padding:1.5rem 1rem;text-align:center;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.fb-hero-glow{position:absolute;inset:0;opacity:.06;pointer-events:none}
+.fb-hero-label{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem;position:relative}
+.fb-hero-num{font-family:'Playfair Display',serif;font-size:72px;font-weight:400;line-height:1;position:relative;letter-spacing:-.02em}
+.fb-hero-sub{font-size:12px;margin-top:.5rem;position:relative;opacity:.7}
+.fb-hero-bar{height:4px;border-radius:2px;margin:.875rem auto 0;max-width:140px;overflow:hidden;background:rgba(255,255,255,0.08)}
+.fb-hero-bar-fill{height:100%;border-radius:2px;transition:width 1.2s ease}
+
+/* Dual scores (after registro) */
+.fb-dual{display:flex;gap:10px;margin-bottom:1.25rem}
+.fb-dscore{flex:1;border-radius:var(--rs);padding:1rem;text-align:center;border:1px solid var(--border);position:relative;overflow:hidden}
+.fb-dscore-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:400;line-height:1}
+.fb-dscore-lbl{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+
+.fb-title{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:.75rem;color:var(--text);display:flex;align-items:center;gap:8px}
+.fb-title::before{content:'';width:3px;height:18px;border-radius:2px;background:currentColor;opacity:.6;flex-shrink:0}
+.fb-body{font-size:13.5px;color:var(--text2);line-height:1.85;white-space:pre-wrap}
+.fb-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.fb-back{width:100%;margin-top:1.25rem;padding:15px;background:linear-gradient(135deg,#1a3a6e,#0d2347);color:#fff;border:1px solid rgba(74,144,217,0.3);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;letter-spacing:.02em;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.fb-back:active{transform:scale(.98)}
+
+/* REGISTRO */
+.reg-wrap{background:var(--bg3);border:1px solid rgba(201,168,76,.18);border-radius:var(--r);padding:1.25rem;margin-top:12px}
+.reg-title{font-size:13px;font-weight:500;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.reg-desc{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6}
+.reg-inp{width:100%;border:1px solid var(--border2);border-radius:var(--rs);padding:12px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);background:var(--surface);outline:none;resize:none;line-height:1.6;min-height:130px;transition:border-color .2s}
+.reg-inp:focus{border-color:rgba(201,168,76,.4)}
+.reg-inp::placeholder{color:var(--text3)}
+.reg-send{width:100%;margin-top:10px;padding:14px;background:var(--green-l);border:1px solid rgba(61,170,110,0.3);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--green);letter-spacing:.02em;transition:all .2s}
+.reg-send:active{transform:scale(.98)}
+
+/* CONFIG */
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+.cfg-row:last-child{border-bottom:none;padding-bottom:0}
+.cfg-lbl{font-size:14px;font-weight:500;color:var(--text)}
+.cfg-val{font-size:13px;color:var(--text3)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center;z-index:9999;backdrop-filter:blur(4px)}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:1.5rem;padding-bottom:calc(1.5rem + env(safe-area-inset-bottom));width:100%;max-width:560px}
+.modal-bar{width:36px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 1.25rem}
+.modal h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:8px;color:var(--text)}
+.modal p{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:1.25rem}
+.mbtns{display:flex;gap:10px}
+.mcancel{flex:1;padding:14px;background:var(--surface2);border:none;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text2);cursor:pointer}
+.msave{flex:2;padding:14px;background:var(--red-l);border:1px solid rgba(224,82,82,0.3);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--red)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bou{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+@media(min-width:768px){
+  html,body{overflow:auto}
+  .view.active{display:flex}
+  .scroll,.bnav,.inp-wrap,.chat-wrap{max-width:720px;margin-left:auto;margin-right:auto;width:100%}
+  .modal{border-radius:20px;margin-bottom:2rem;max-width:440px}
+  .overlay{align-items:center}
+  .mbub{max-width:62%}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="dash" class="view active">
+  <div class="scroll">
+    <div class="hd">
+      <div class="hd-row">
+        <div>
+          <h1>Anamnese</h1>
+          <p>Simulador clínico · UFPE Medicina</p>
+        </div>
+        <div class="ufpe-logo">
+          <svg width="46" height="46" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="48" fill="#0d2347"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#C9A84C" stroke-width="1" opacity=".5"/>
+            <text x="50" y="36" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="#C9A84C" letter-spacing="1.5">UFPE</text>
+            <line x1="28" y1="42" x2="72" y2="42" stroke="#C9A84C" stroke-width=".7" opacity=".5"/>
+            <text x="50" y="53" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" fill="#8B95A8">UNIVERSIDADE</text>
+            <text x="50" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" fill="#8B95A8">FEDERAL DE</text>
+            <text x="50" y="71" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" fill="#8B95A8">PERNAMBUCO</text>
+            <path d="M30 80 Q50 86 70 80" fill="none" stroke="#C9A84C" stroke-width="1" opacity=".4"/>
+          </svg>
+          <span>MED · UFPE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="mc">
+        <div class="mc-glow" style="background:linear-gradient(90deg,#4A90D9,transparent)"></div>
+        <div class="mi">🩺</div><div class="ml">Sessões</div>
+        <div class="mv" id="m-sessoes">0</div><div class="mu">realizadas</div>
+        <div class="mt" style="background:var(--blue-l);color:var(--blue)" id="m-sessoes-badge">— início</div>
+      </div>
+      <div class="mc">
+        <div class="mc-glow" style="background:linear-gradient(90deg,#3DAA6E,transparent)"></div>
+        <div class="mi">📊</div><div class="ml">Média</div>
+        <div class="mv" id="m-media">—</div><div class="mu">perguntas / 10</div>
+        <div class="mt" style="background:var(--surface2);color:var(--text3)" id="m-media-badge">sem dados</div>
+      </div>
+      <div class="mc">
+        <div class="mc-glow" style="background:linear-gradient(90deg,#8B7BE8,transparent)"></div>
+        <div class="mi">📝</div><div class="ml">Último registro</div>
+        <div class="mv" id="m-reg">—</div><div class="mu" id="m-reg-sub">nenhum</div>
+        <div class="mt" style="background:var(--surface2);color:var(--text3)" id="m-reg-badge">sem dados</div>
+      </div>
+      <div class="mc">
+        <div class="mc-glow" style="background:linear-gradient(90deg,#C9A84C,transparent)"></div>
+        <div class="mi">🎯</div><div class="ml">Última esp.</div>
+        <div class="mv" id="m-esp" style="font-size:14px;margin-top:4px">—</div><div class="mu">especialidade</div>
+        <div class="mt" style="background:var(--surface2);color:var(--text3)" id="m-esp-badge">comece!</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Nova simulação</div>
+      <div class="card">
+        <div class="spec-tabs" id="spec-tabs">
+          <button class="stab on" data-tab="adulto">Adulto</button>
+          <button class="stab" data-tab="ped">Pediatria 👶</button>
+        </div>
+        <div id="chips-adulto" class="chips">
+          <div class="chip" data-esp="Clínica Médica">Clínica Médica</div>
+          <div class="chip" data-esp="Cardiologia">Cardiologia</div>
+          <div class="chip" data-esp="Neurologia">Neurologia</div>
+          <div class="chip" data-esp="Gastroenterologia">Gastroenterologia</div>
+          <div class="chip" data-esp="Pneumologia">Pneumologia</div>
+          <div class="chip" data-esp="Nefrologia">Nefrologia</div>
+          <div class="chip" data-esp="Endocrinologia">Endocrinologia</div>
+          <div class="chip" data-esp="Reumatologia">Reumatologia</div>
+          <div class="chip" data-esp="Infectologia">Infectologia</div>
+          <div class="chip" data-esp="Hematologia">Hematologia</div>
+        </div>
+        <div id="chips-ped" class="chips" style="display:none">
+          <div class="chip" data-esp="Pediatria Geral">Pediatria Geral</div>
+          <div class="chip" data-esp="Neonatologia">Neonatologia</div>
+          <div class="chip" data-esp="Cardiopediatria">Cardiopediatria</div>
+          <div class="chip" data-esp="Neuropediatria">Neuropediatria</div>
+          <div class="chip" data-esp="Pneumopediatria">Pneumopediatria</div>
+          <div class="chip" data-esp="Gastropediatria">Gastropediatria</div>
+          <div class="chip" data-esp="Infectopediatria">Infectopediatria</div>
+          <div class="chip" data-esp="Endocrinopediatria">Endocrinopediatria</div>
+        </div>
+        <div style="font-size:10px;font-weight:500;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Dificuldade</div>
+        <div class="diffs" id="diffs">
+          <button class="diff">Fácil</button>
+          <button class="diff on">Médio</button>
+          <button class="diff">Difícil</button>
+        </div>
+        <button class="go" id="start-btn">🩺 &nbsp;Iniciar simulação</button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Histórico</div>
+      <div id="hist-area"><div class="card empty-state"><div class="ei">📋</div><div class="et">Nenhuma sessão ainda</div><div class="ed">Inicie uma simulação para começar seu histórico.</div></div></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-t">Dicas personalizadas</div>
+      <div id="tips-area"></div>
+      <div style="height:1.25rem"></div>
+    </div>
+  </div>
+
+  <nav class="bnav">
+    <button class="nb on" id="nb-dash">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor"/></svg>
+      <span>Início</span>
+    </button>
+    <button class="nb" id="nb-prog">
+      <svg viewBox="0 0 24 24"><polyline points="3 17 8 12 13 16 21 7" stroke="currentColor"/></svg>
+      <span>Progresso</span>
+    </button>
+    <button class="nb" id="nb-cfg">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor"/></svg>
+      <span>Config</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ══ PROGRESSO ══ -->
+<div id="prog" class="view">
+  <div class="scroll">
+    <div class="hd"><div class="hd-row"><div><h1>Progresso</h1><p>Histórico de desempenho</p></div></div></div>
+    <div class="sec"><div class="sec-t">Sessões realizadas</div><div id="prog-hist-area"><div class="card empty-state"><div class="ei">📋</div><div class="et">Nenhuma sessão ainda</div><div class="ed">Complete uma simulação para ver seu histórico.</div></div></div></div>
+    <div style="height:1rem"></div>
+  </div>
+  <nav class="bnav">
+    <button class="nb" id="nb-dash2"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor"/></svg><span>Início</span></button>
+    <button class="nb on" id="nb-prog2"><svg viewBox="0 0 24 24"><polyline points="3 17 8 12 13 16 21 7" stroke="currentColor"/></svg><span>Progresso</span></button>
+    <button class="nb" id="nb-cfg2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor"/></svg><span>Config</span></button>
+  </nav>
+</div>
+
+<!-- ══ CONFIG ══ -->
+<div id="cfg" class="view">
+  <div class="scroll">
+    <div class="hd"><div class="hd-row"><div><h1>Configurações</h1><p>Gerencie sua conta</p></div></div></div>
+    <div class="sec">
+      <div class="card">
+        <div class="cfg-row"><div class="cfg-lbl">Versão</div><div class="cfg-val">v2.0</div></div>
+        <div class="cfg-row"><div class="cfg-lbl">Backend</div><div class="cfg-val">Supabase + NVIDIA</div></div>
+        <div class="cfg-row"><div class="cfg-lbl">Instituição</div><div class="cfg-val">UFPE — Medicina</div></div>
+        <div class="cfg-row" style="border-bottom:none">
+          <button onclick="document.getElementById('overlay').style.display='flex'" style="width:100%;padding:14px;background:var(--red-l);border:1px solid rgba(224,82,82,0.3);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--red);cursor:pointer;font-weight:500;letter-spacing:.02em">🗑 &nbsp;Apagar histórico</button>
+        </div>
+      </div>
+    </div>
+    <div style="height:1rem"></div>
+  </div>
+  <nav class="bnav">
+    <button class="nb" id="nb-dash3"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor"/></svg><span>Início</span></button>
+    <button class="nb" id="nb-prog3"><svg viewBox="0 0 24 24"><polyline points="3 17 8 12 13 16 21 7" stroke="currentColor"/></svg><span>Progresso</span></button>
+    <button class="nb on" id="nb-cfg3"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor"/></svg><span>Config</span></button>
+  </nav>
+</div>
+
+<!-- ══ SIMULATOR ══ -->
+<div id="sim" class="view">
+  <div class="sim-hd">
+    <button class="sim-back" id="back-btn"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <div class="sim-info">
+      <div class="sim-title" id="sim-title">Simulação</div>
+      <div class="sim-meta" id="sim-meta">Clínica Médica · Médio</div>
+    </div>
+    <button class="sim-end" id="end-btn">Encerrar</button>
+    <button id="reset-hist-btn" title="Resetar histórico" style="flex-shrink:0;background:none;border:1px solid var(--border2);border-radius:var(--rs);padding:8px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;display:flex;align-items:center;justify-content:center">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E05252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.37"/></svg>
+    </button>
+  </div>
+  <div class="chat-wrap" id="chat"></div>
+  <div class="inp-wrap">
+    <textarea class="inp" id="inp" rows="1" placeholder="Faça sua pergunta ao paciente..."></textarea>
+    <button class="send" id="send-btn"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-bar"></div>
+    <h2>Apagar histórico</h2>
+    <p>Tem certeza? Todas as sessões salvas serão removidas permanentemente.</p>
+    <div class="mbtns">
+      <button class="mcancel" id="modal-cancel">Cancelar</button>
+      <button class="msave" id="modal-save">Apagar tudo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CHIP COLORS ──
+const CHIP_COLORS = {
+  'Clínica Médica':       {b:'#4A90D9',c:'#4A90D9',bg:'rgba(74,144,217,0.15)'},
+  'Cardiologia':          {b:'#E05252',c:'#E05252',bg:'rgba(224,82,82,0.15)'},
+  'Neurologia':           {b:'#8B7BE8',c:'#8B7BE8',bg:'rgba(139,123,232,0.15)'},
+  'Gastroenterologia':    {b:'#3DAA6E',c:'#3DAA6E',bg:'rgba(61,170,110,0.15)'},
+  'Pneumologia':          {b:'#E09644',c:'#E09644',bg:'rgba(224,150,68,0.15)'},
+  'Nefrologia':           {b:'#38B2AC',c:'#38B2AC',bg:'rgba(56,178,172,0.15)'},
+  'Endocrinologia':       {b:'#E07AA0',c:'#E07AA0',bg:'rgba(224,122,160,0.15)'},
+  'Reumatologia':         {b:'#38BDF8',c:'#38BDF8',bg:'rgba(56,189,248,0.15)'},
+  'Infectologia':         {b:'#6EE7B7',c:'#6EE7B7',bg:'rgba(110,231,183,0.12)'},
+  'Hematologia':          {b:'#A78BFA',c:'#A78BFA',bg:'rgba(167,139,250,0.15)'},
+  'Pediatria Geral':      {b:'#E05252',c:'#E05252',bg:'rgba(224,82,82,0.15)'},
+  'Neonatologia':         {b:'#E09644',c:'#E09644',bg:'rgba(224,150,68,0.15)'},
+  'Cardiopediatria':      {b:'#E05252',c:'#E05252',bg:'rgba(224,82,82,0.15)'},
+  'Neuropediatria':       {b:'#8B7BE8',c:'#8B7BE8',bg:'rgba(139,123,232,0.15)'},
+  'Pneumopediatria':      {b:'#E09644',c:'#E09644',bg:'rgba(224,150,68,0.15)'},
+  'Gastropediatria':      {b:'#3DAA6E',c:'#3DAA6E',bg:'rgba(61,170,110,0.15)'},
+  'Infectopediatria':     {b:'#6EE7B7',c:'#6EE7B7',bg:'rgba(110,231,183,0.12)'},
+  'Endocrinopediatria':   {b:'#E07AA0',c:'#E07AA0',bg:'rgba(224,122,160,0.15)'},
+};
+
+function paintChip(chip, active) {
+  const col = CHIP_COLORS[chip.dataset.esp] || {b:'#4A90D9',c:'#4A90D9',bg:'rgba(74,144,217,0.15)'};
+  chip.style.borderColor = col.b;
+  chip.style.color = col.c;
+  chip.style.background = col.bg;
+  chip.style.opacity = active ? '1' : '0.4';
+  chip.style.fontWeight = active ? '500' : '400';
+  chip.style.borderWidth = active ? '1.5px' : '1px';
+}
+
+function paintAllChips() {
+  document.querySelectorAll('#chips-adulto .chip, #chips-ped .chip').forEach(c => paintChip(c, false));
+  if (currentChip) paintChip(currentChip, true);
+}
+
+// ── STATE ──
+let messages = [], isLoading = false, sessionActive = false;
+let specialty = 'Clínica Médica', difficulty = 'Médio', isPed = false;
+let currentChip = null, currentSessionLog = [], pendingFeedback = null;
+
+// ── STORAGE ──
+function getSessions() {
+  try { return JSON.parse(localStorage.getItem('anamnese_sessions') || '[]'); } catch(e) { return []; }
+}
+function saveSession(sess) {
+  const s = getSessions(); s.unshift(sess);
+  localStorage.setItem('anamnese_sessions', JSON.stringify(s.slice(0,50)));
+  renderHistory(); updateMetrics(); renderTips();
+}
+function getInitials(name) { return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+
+const AV_BG  = ['rgba(74,144,217,0.2)','rgba(61,170,110,0.2)','rgba(139,123,232,0.2)','rgba(224,82,82,0.2)','rgba(224,150,68,0.2)','rgba(224,122,160,0.2)'];
+const AV_COL = ['#4A90D9','#3DAA6E','#8B7BE8','#E05252','#E09644','#E07AA0'];
+
+function renderHistory() {
+  const sessions = getSessions();
+  ['hist-area','prog-hist-area'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    if (!sessions.length) { el.innerHTML='<div class="card empty-state"><div class="ei">📋</div><div class="et">Nenhuma sessão ainda</div><div class="ed">Inicie uma simulação para começar.</div></div>'; return; }
+    el.innerHTML = '<div class="card">' + sessions.map((s,i) => {
+      const n1 = s.nota1 !== undefined ? s.nota1 : '—';
+      const n2 = s.nota2 !== undefined ? s.nota2 : '—';
+      return `<div class="sess">
+        <div class="av" style="background:${AV_BG[i%6]};color:${AV_COL[i%6]}">${getInitials(s.paciente||'P')}</div>
+        <div class="si"><div class="sn">${s.paciente||'Paciente'}</div><div class="sm">${s.especialidade} · ${s.dificuldade} · ${s.data}</div><span class="sbadge">concluído</span></div>
+        <div class="ss">
+          <div class="sb2"><div class="snum">${n1}</div><div class="slbl">perguntas</div></div>
+          ${n2!=='—'?`<div class="sb2"><div class="snum">${n2}</div><div class="slbl">registro</div></div>`:''}
+        </div></div>`;
+    }).join('') + '</div>';
+  });
+}
+
+function updateMetrics() {
+  const s = getSessions();
+  document.getElementById('m-sessoes').textContent = s.length;
+  if (!s.length) {
+    ['m-sessoes-badge','m-media-badge','m-reg-badge','m-esp-badge'].forEach(id => { const el=document.getElementById(id); if(el){el.textContent=id==='m-sessoes-badge'?'— início':id==='m-esp-badge'?'comece!':'sem dados'; el.style.background='var(--surface2)'; el.style.color='var(--text3)';} });
+    document.getElementById('m-media').textContent='—'; document.getElementById('m-reg').textContent='—';
+    document.getElementById('m-reg-sub').textContent='nenhum'; document.getElementById('m-esp').textContent='—'; return;
+  }
+  document.getElementById('m-sessoes-badge').textContent='▲ ativo';
+  document.getElementById('m-sessoes-badge').style.background='var(--blue-l)'; document.getElementById('m-sessoes-badge').style.color='var(--blue)';
+  const notas = s.filter(x=>x.nota1!==undefined).map(x=>x.nota1);
+  const media = notas.length?(notas.reduce((a,b)=>a+b,0)/notas.length).toFixed(1):'—';
+  document.getElementById('m-media').textContent = media;
+  const mb = document.getElementById('m-media-badge');
+  mb.textContent = media>=7?'▲ bom':media>=5?'→ regular':'⚠ melhorar';
+  mb.style.background = media>=7?'var(--green-l)':media>=5?'var(--amber-l)':'var(--red-l)';
+  mb.style.color = media>=7?'var(--green)':media>=5?'var(--amber)':'var(--red)';
+  const last = s[0];
+  document.getElementById('m-reg').textContent = last.nota2!==undefined?last.nota2:'—';
+  document.getElementById('m-reg-sub').textContent = last.paciente||'último';
+  const rb = document.getElementById('m-reg-badge');
+  rb.textContent = last.nota2>=7?'▲ bom':'⚠ melhorar';
+  rb.style.background = last.nota2>=7?'var(--green-l)':'var(--red-l)';
+  rb.style.color = last.nota2>=7?'var(--green)':'var(--red)';
+  const esp = last.especialidade||'—';
+  document.getElementById('m-esp').textContent = esp.length>10?esp.slice(0,10)+'…':esp;
+  document.getElementById('m-esp-badge').textContent = last.dificuldade||'—';
+  document.getElementById('m-esp-badge').style.background='var(--gold-l)'; document.getElementById('m-esp-badge').style.color='var(--gold)';
+}
+
+// ── DYNAMIC TIPS ──
+const ALL_TIPS = [
+  {key:'alergias',    tag:'Alergias',           cor:'#4A90D9', txt:'Pergunte sobre alergias logo no início — é fácil esquecer no fim da consulta.'},
+  {key:'cirurgias',   tag:'Antecedentes cirúrgicos', cor:'#E09644', txt:'Sempre pergunte sobre cirurgias e internações anteriores — podem ser cruciais para o diagnóstico.'},
+  {key:'hda',         tag:'HDA completa',        cor:'#8B7BE8', txt:'A HDA precisa ter: início, localização, caracterização, irradiação, intensidade (EVA 0–10), fatores de melhora/piora e sintomas associados.'},
+  {key:'gineco',      tag:'Histórico ginecológico', cor:'#E07AA0', txt:'Para mulheres, inclua sempre ciclo menstrual, DUM e uso de contraceptivos, mesmo em queixas não ginecológicas.'},
+  {key:'habitos',     tag:'Hábitos de vida',     cor:'#3DAA6E', txt:'Tabagismo, etilismo, uso de drogas e atividade física fazem parte da anamnese completa — não os pule.'},
+  {key:'registro',    tag:'Registro sem diagnósticos', cor:'#E05252', txt:'No prontuário, descreva os sintomas — nunca antecipe diagnósticos. "Tontura ao levantar", não "hipotensão ortostática".'},
+  {key:'sistemas',    tag:'Interrogatório por sistemas', cor:'#38B2AC', txt:'Revise todos os sistemas: cardiovascular, respiratório, digestivo, urinário, neurológico, musculoesquelético, pele, olhos e ouvidos.'},
+  {key:'familia',     tag:'Antecedentes familiares', cor:'#A78BFA', txt:'O histórico familiar é fundamental — DM, HAS, cardiopatias, neoplasias e doenças genéticas na família orientam o raciocínio clínico.'},
+  {key:'identificacao',tag:'Identificação completa', cor:'#6EE7B7', txt:'Nome, idade, sexo, profissão, procedência e estado civil fazem parte da identificação — não pule nenhum campo.'},
+  {key:'pediatria',   tag:'Anamnese pediátrica', cor:'#E05252', txt:'Em crianças inclua sempre: história perinatal, desenvolvimento neuropsicomotor, vacinação e aleitamento materno.'},
+  {key:'medicamentos',tag:'Medicamentos em uso',  cor:'#C9A84C', txt:'Pergunte sempre sobre medicamentos de uso contínuo, incluindo os caseiros e fitoterápicos — e automedicação recente.'},
+  {key:'eva',         tag:'Escala EVA',           cor:'#38BDF8', txt:'Use sempre a escala EVA (0 a 10) para quantificar dor. Pergunte: "De 0 a 10, qual nota você daria para essa dor?"'},
+];
+
+function renderTips() {
+  const el = document.getElementById('tips-area');
+  if (!el) return;
+  const sessions = getSessions();
+
+  if (sessions.length === 0) {
+    // sem histórico — mostra 4 dicas gerais de boas-vindas
+    const defaults = ['hda','alergias','sistemas','registro'];
+    el.innerHTML = defaults.map(k => {
+      const t = ALL_TIPS.find(x => x.key === k);
+      return `<div class="tip"><div class="tip-accent" style="background:${t.cor}"></div><div class="tip-tag" style="color:${t.cor}">${t.tag}</div><div class="tip-txt">${t.txt}</div></div>`;
+    }).join('');
+    return;
+  }
+
+  // analisa feedbacks das sessões para detectar padrões de erro
+  // usa os campos de nota para inferir onde o estudante é mais fraco
+  const notas1 = sessions.filter(s => s.nota1 != null).map(s => s.nota1);
+  const notas2 = sessions.filter(s => s.nota2 != null).map(s => s.nota2);
+  const media1 = notas1.length ? notas1.reduce((a,b)=>a+b,0)/notas1.length : null;
+  const media2 = notas2.length ? notas2.reduce((a,b)=>a+b,0)/notas2.length : null;
+  const total = sessions.length;
+
+  // conta especialidades mais praticadas
+  const espCount = {};
+  sessions.forEach(s => { espCount[s.especialidade] = (espCount[s.especialidade]||0)+1; });
+  const topEsp = Object.entries(espCount).sort((a,b)=>b[1]-a[1])[0]?.[0];
+  const hasPed = sessions.some(s => s.especialidade?.includes('ediatri') || s.especialidade?.includes('Neonat'));
+
+  // monta dicas priorizadas
+  const chosen = [];
+
+  // dica de registro se nota2 baixa
+  if (media2 !== null && media2 < 7) chosen.push('registro');
+
+  // dica de HDA se nota1 baixa
+  if (media1 !== null && media1 < 6) chosen.push('hda');
+
+  // alergias — quase sempre esquecido, sempre relevante
+  if (total <= 5 || (media1 !== null && media1 < 8)) chosen.push('alergias');
+
+  // EVA — frequentemente esquecido
+  if (media1 !== null && media1 < 7.5) chosen.push('eva');
+
+  // sistemas se nota1 moderada
+  if (media1 !== null && media1 < 7) chosen.push('sistemas');
+
+  // gineco se praticou especialidade relevante
+  const ginecEsps = ['Clínica Médica','Gastroenterologia','Nefrologia','Endocrinologia'];
+  if (ginecEsps.includes(topEsp)) chosen.push('gineco');
+
+  // pediatria se praticou pediatria
+  if (hasPed) chosen.push('pediatria');
+
+  // hábitos se nota1 abaixo de 8
+  if (media1 !== null && media1 < 8) chosen.push('habitos');
+
+  // família e medicamentos se já tem experiência
+  if (total >= 3) chosen.push('familia');
+  if (total >= 2) chosen.push('medicamentos');
+
+  // identificação para iniciantes
+  if (total < 3) chosen.push('identificacao');
+
+  // remove duplicatas e limita a 4
+  const unique = [...new Set(chosen)].slice(0, 4);
+
+  // se ficou vazio (notas altas em tudo), mostra dicas de aprofundamento
+  if (unique.length === 0) unique.push('eva','familia','medicamentos','gineco');
+
+  const tips = unique.map(k => ALL_TIPS.find(x => x.key === k)).filter(Boolean);
+
+  // header com contexto
+  let headerMsg = '';
+  if (total === 1) headerMsg = 'Com base na sua primeira sessão:';
+  else if (media1 !== null && media1 >= 8) headerMsg = `Ótimo desempenho! Continue aprimorando:`;
+  else if (media1 !== null && media1 < 5) headerMsg = `Você precisa reforçar esses pontos:`;
+  else headerMsg = `Com base nas suas ${total} sessões:`;
+
+  el.innerHTML = `
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px;font-style:italic">${headerMsg}</div>
+    ${tips.map(t => `<div class="tip"><div class="tip-accent" style="background:${t.cor}"></div><div class="tip-tag" style="color:${t.cor}">${t.tag}</div><div class="tip-txt">${t.txt}</div></div>`).join('')}
+  `;
+}
+function showView(id) { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+['nb-dash','nb-dash2','nb-dash3'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',()=>showView('dash'));});
+['nb-prog','nb-prog2','nb-prog3'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',()=>showView('prog'));});
+['nb-cfg','nb-cfg2','nb-cfg3'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',()=>showView('cfg'));});
+
+// ── SPEC TABS ──
+document.querySelectorAll('#spec-tabs .stab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#spec-tabs .stab').forEach(t=>t.classList.remove('on'));
+    tab.classList.add('on'); isPed = tab.dataset.tab==='ped';
+    document.getElementById('chips-adulto').style.display = isPed?'none':'flex';
+    document.getElementById('chips-ped').style.display = isPed?'flex':'none';
+    const first = document.querySelector(isPed?'#chips-ped .chip':'#chips-adulto .chip');
+    if(first){currentChip=first;specialty=first.dataset.esp;paintAllChips();}
+  });
+});
+
+document.querySelectorAll('#chips-adulto .chip, #chips-ped .chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{currentChip=chip;specialty=chip.dataset.esp;paintAllChips();});
+});
+
+document.querySelectorAll('#diffs .diff').forEach(b=>{
+  b.addEventListener('click',()=>{document.querySelectorAll('#diffs .diff').forEach(x=>x.classList.remove('on'));b.classList.add('on');difficulty=b.textContent.trim();});
+});
+
+// ── MODAL ──
+document.getElementById('modal-cancel').addEventListener('click',()=>document.getElementById('overlay').style.display='none');
+document.getElementById('modal-save').addEventListener('click',()=>{localStorage.removeItem('anamnese_sessions');renderHistory();updateMetrics();renderTips();document.getElementById('overlay').style.display='none';});
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===document.getElementById('overlay'))document.getElementById('overlay').style.display='none';});
+
+// ── SYSTEM PROMPT ──
+function buildPrompt() {
+  const d={'Fácil':'simples e objetivos','Médio':'moderados com histórico relevante','Difícil':'complexos com múltiplas comorbidades e distratores'};
+  const pedExtra=isPed?'\nO paciente é uma CRIANÇA — o responsável responde. Inclua características pediátricas: desenvolvimento, vacinação, aleitamento, história perinatal.':'';
+  return `Você simula um paciente para treino de anamnese de um estudante de medicina — especialidade: ${specialty}.
+
+REGRAS ABSOLUTAS:
+- Você É o paciente (ou responsável, se pediatria). NUNCA saia do personagem durante a consulta.
+- NUNCA revele o diagnóstico antes do feedback.
+- NUNCA dê dicas, sugestões ou avalie durante a consulta.
+- Responda APENAS ao que for perguntado. Não ofereça informações espontaneamente.
+- Use português brasileiro coloquial. Demonstre emoções naturais (nervosismo, dor, alívio).
+- Dificuldade: ${difficulty} — sintomas ${d[difficulty]||'moderados'}.${pedExtra}
+
+QUANDO O ESTUDANTE DISSER QUE TERMINOU (ex: "terminamos", "encerrei", "pode sair"):
+Saia do personagem e forneça avaliação RIGOROSA no seguinte formato EXATO:
+
+NOME_PACIENTE: [nome completo do paciente que você criou]
+
+NOTA_PERGUNTAS: [número de 0 a 10 com UMA casa decimal — seja RIGOROSO, use os critérios abaixo]
+AVALIACAO_PERGUNTAS:
+[Avaliação detalhada. Para cada item abaixo, marque ✓ (perguntou) ou ✕ (não perguntou).
+A NOTA deve refletir rigorosamente o percentual de itens cobertos:
+- 10 itens obrigatórios valem 1 ponto cada. Itens parcialmente cobertos valem 0.5.
+- NUNCA dê nota acima de 7.0 se faltaram alergias, antecedentes cirúrgicos ou interrogatório por sistemas completo.
+- NUNCA dê nota acima de 5.0 se faltou HDA completa ou antecedentes pessoais.
+- NUNCA dê nota acima de 3.0 se só foi perguntada a queixa principal.
+
+ITENS OBRIGATÓRIOS (1 ponto cada):
+1. Identificação completa (nome, idade, profissão, procedência)
+2. Queixa principal com duração
+3. HDA completa (início, localização, caracterização, irradiação, intensidade EVA, fatores de melhora/piora, sintomas associados)
+4. Interrogatório cardiovascular e respiratório
+5. Interrogatório digestivo e urinário
+6. Interrogatório neurológico e musculoesquelético
+7. Interrogatório pele, olhos e ouvidos
+8. Antecedentes pessoais (doenças, cirurgias, internações, ALERGIAS, medicamentos)
+9. Antecedentes familiares e hábitos de vida (tabagismo, etilismo, drogas, atividade física)
+10. História gineco-obstétrica (se mulher) OU condição socioeconômica e suporte social
+
+Liste cada item com ✓ ou ✕ e justifique a nota final.]
+
+NOTA_REGISTRO: [deixar em branco]
+AVALIACAO_REGISTRO: [deixar em branco]
+
+DIAGNOSTICO: [diagnóstico do caso clínico]`;
+}
+
+// ── CHAT HELPERS ──
+function addMsg(role, text) {
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className=`msg ${role}`;
+  const av=document.createElement('div'); av.className='mav';
+  av.style.background=role==='user'?'rgba(74,144,217,0.2)':'rgba(56,178,172,0.2)';
+  av.style.color=role==='user'?'#4A90D9':'#38B2AC';
+  av.textContent=role==='user'?'Eu':'P';
+  const b=document.createElement('div'); b.className='mbub'; b.textContent=text;
+  d.appendChild(av); d.appendChild(b); chat.appendChild(d); chat.scrollTop=99999;
+  if(role==='user') currentSessionLog.push({role:'user',text});
+  else currentSessionLog.push({role:'patient',text});
+}
+
+function showTyping() {
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='typing'; d.id='typing';
+  const av=document.createElement('div'); av.className='mav';
+  av.style.background='rgba(56,178,172,0.2)'; av.style.color='#38B2AC'; av.textContent='P';
+  const dots=document.createElement('div'); dots.className='dots';
+  dots.innerHTML='<span></span><span></span><span></span>';
+  d.appendChild(av); d.appendChild(dots); chat.appendChild(d); chat.scrollTop=99999;
+}
+function hideTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+
+function addErr(txt) {
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div');
+  d.style.cssText='background:rgba(224,82,82,0.15);color:#E05252;padding:12px 16px;border-radius:12px;font-size:13px;border:1px solid rgba(224,82,82,0.2)';
+  d.textContent='⚠ '+txt; chat.appendChild(d); chat.scrollTop=99999;
+}
+
+// ── PARSE FEEDBACK ──
+function parseFeedback(text) {
+  const get=(key)=>{const rx=new RegExp(key+':\\s*([\\s\\S]*?)(?=\\n[A-Z_]+:|$)','i');const m=text.match(rx);return m?m[1].trim():'';};
+  return {nota1:parseFloat(get('NOTA_PERGUNTAS'))||null, avPerguntas:get('AVALIACAO_PERGUNTAS'), diagnostico:get('DIAGNOSTICO'), nomePaciente:get('NOME_PACIENTE')};
+}
+
+function scoreColor(n) {
+  if (n === null || isNaN(n)) return {c:'var(--text3)',bg:'var(--surface2)',border:'var(--border)',glow:'transparent'};
+  if (n >= 8) return {c:'#3DAA6E',bg:'rgba(61,170,110,0.1)',border:'rgba(61,170,110,0.25)',glow:'#3DAA6E'};
+  if (n >= 6) return {c:'#4A90D9',bg:'rgba(74,144,217,0.1)',border:'rgba(74,144,217,0.25)',glow:'#4A90D9'};
+  if (n >= 4) return {c:'#E09644',bg:'rgba(224,150,68,0.1)',border:'rgba(224,150,68,0.25)',glow:'#E09644'};
+  return {c:'#E05252',bg:'rgba(224,82,82,0.1)',border:'rgba(224,82,82,0.25)',glow:'#E05252'};
+}
+
+function scoreLabel(n) {
+  if (n === null || isNaN(n)) return 'sem dados';
+  if (n >= 9) return 'Excelente';
+  if (n >= 8) return 'Muito bom';
+  if (n >= 7) return 'Bom';
+  if (n >= 6) return 'Satisfatório';
+  if (n >= 5) return 'Regular';
+  if (n >= 3) return 'Insuficiente';
+  return 'Precisa muito melhorar';
+}
+
+function showFeedback(rawText) {
+  sessionActive=false; document.getElementById('end-btn').style.display='none';
+  const chat=document.getElementById('chat');
+  const fb=parseFeedback(rawText); pendingFeedback=fb;
+  const col = scoreColor(fb.nota1);
+  const pct = fb.nota1 !== null ? (fb.nota1/10)*100 : 0;
+
+  const wrap=document.createElement('div'); wrap.className='fb-wrap';
+
+  // Hero score
+  wrap.innerHTML = `
+    <div class="fb-hero" style="background:${col.bg};border:1px solid ${col.border}">
+      <div class="fb-hero-glow" style="background:radial-gradient(circle at 50% 0%,${col.glow},transparent 70%)"></div>
+      <div class="fb-hero-label" style="color:${col.c}">Nota — Perguntas</div>
+      <div class="fb-hero-num" style="color:${col.c}">${fb.nota1 !== null ? fb.nota1 : '—'}<span style="font-size:28px;opacity:.5">/10</span></div>
+      <div class="fb-hero-sub" style="color:${col.c}">${scoreLabel(fb.nota1)}</div>
+      <div class="fb-hero-bar"><div class="fb-hero-bar-fill" data-pct="${pct}" style="width:0%;background:${col.c}"></div></div>
+    </div>
+    <div class="fb-title" style="color:${col.c}">Avaliação das perguntas</div>
+    <div class="fb-body" id="fb-body-perguntas">${fb.avPerguntas}\n\n🔍 Diagnóstico: ${fb.diagnostico}</div>
+    <div class="fb-divider"></div>
+  `;
+
+  // Registro input section
+  const regWrap=document.createElement('div'); regWrap.className='reg-wrap'; regWrap.id='reg-section';
+  regWrap.innerHTML=`
+    <div class="reg-title">📝 Envie seu registro escrito</div>
+    <div class="reg-desc">Escreva o interrogatório como faria no prontuário real (QPD, HDA, IS, antecedentes, medicações). Você receberá uma nota separada pela qualidade do registro.</div>
+    <textarea class="reg-inp" id="reg-inp" placeholder="QPD: ...&#10;HDA: ...&#10;IS: ..."></textarea>
+    <button class="reg-send" id="reg-send-btn">Enviar para avaliação →</button>
+  `;
+  wrap.appendChild(regWrap);
+  chat.appendChild(wrap); chat.scrollTop=99999;
+
+  // animate bar
+  setTimeout(()=>{
+    const bar = wrap.querySelector('.fb-hero-bar-fill');
+    if(bar) bar.style.width = bar.dataset.pct+'%';
+  }, 100);
+
+  document.getElementById('reg-send-btn').addEventListener('click',()=>submitRegistro(fb, wrap, regWrap));
+}
+
+async function submitRegistro(fb, mainWrap, regWrap) {
+  const text=document.getElementById('reg-inp').value.trim();
+  if(!text||text.length<20){alert('Escreva o registro antes de enviar.');return;}
+  regWrap.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:13px;letter-spacing:.03em">⏳ &nbsp;Avaliando seu registro...</div>';
+
+  const regPrompt=`Você é um professor de semiologia médica avaliando o registro escrito de uma anamnese feita por um estudante de medicina.
+
+CONTEXTO:
+- Especialidade: ${specialty}
+- Dificuldade: ${difficulty}
+- Diagnóstico do caso: ${fb.diagnostico}
+
+REGISTRO ENVIADO PELO ESTUDANTE:
+${text}
+
+INSTRUÇÕES:
+Avalie de forma RIGOROSA. A nota deve refletir objetivamente a qualidade do registro.
+
+CRITÉRIOS DE NOTA (cada item vale 1 ponto — total 10):
+1. QPD presente e bem formulada (queixa + duração)
+2. HDA completa (início, localização, caracterização, irradiação, EVA, fatores de melhora/piora, sintomas associados)
+3. IS — sistemas cardiovascular e respiratório documentados
+4. IS — sistemas digestivo e urinário documentados
+5. IS — sistemas neurológico e musculoesquelético documentados
+6. Antecedentes pessoais completos (doenças, cirurgias, alergias, medicamentos)
+7. Antecedentes familiares documentados
+8. Hábitos de vida (tabagismo, etilismo, drogas, atividade física)
+9. Sem diagnósticos antecipados — sintomas descritos como sintomas, não como diagnósticos
+10. Ortografia, terminologia médica correta e organização do texto
+
+PENALIDADES (desconte da nota):
+- -1.0 por cada diagnóstico antecipado no registro
+- -0.5 por cada erro ortográfico grave de termo médico
+- -0.5 se a estrutura estiver desorganizada ou ausente
+
+NUNCA dê nota acima de 6.0 se itens 1, 2 ou 9 estiverem incompletos.
+NUNCA dê nota acima de 8.0 se houver diagnóstico antecipado.
+
+Responda EXATAMENTE neste formato:
+NOTA_REGISTRO: [número de 0 a 10 com uma casa decimal]
+PONTOS_POSITIVOS: [liste com ✓ o que foi bem feito]
+PONTOS_NEGATIVOS: [liste com ✕ o que faltou ou foi incorreto]
+CORRECOES: [reescreva os trechos problemáticos da forma correta]`;
+
+  try {
+    const r=await fetch('https://efgpiyrqfwdkabakpwhl.supabase.co/functions/v1/nvidia-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'meta/llama-3.1-70b-instruct',messages:[{role:'user',content:regPrompt}],max_tokens:1024,temperature:0.3})});
+    const data=await r.json();
+    const reply=data?.choices?.[0]?.message?.content||'';
+    const nota2match=reply.match(/NOTA_REGISTRO:\s*([\d.]+)/i);
+    const nota2=nota2match?parseFloat(nota2match[1]):null;
+    const col2 = scoreColor(nota2);
+    const pct2 = nota2 !== null ? (nota2/10)*100 : 0;
+    const cleanReply = reply.replace(/NOTA_REGISTRO:\s*[\d.]+\n?/i,'').trim();
+
+    // Add dual score summary before the registro section
+    const dualDiv = document.createElement('div'); dualDiv.className='fb-dual';
+    const col1 = scoreColor(fb.nota1);
+    dualDiv.innerHTML=`
+      <div class="fb-dscore" style="background:${col1.bg};border-color:${col1.border}">
+        <div class="fb-dscore-num" style="color:${col1.c}">${fb.nota1!==null?fb.nota1:'—'}</div>
+        <div class="fb-dscore-lbl" style="color:${col1.c}">Perguntas</div>
+      </div>
+      <div class="fb-dscore" style="background:${col2.bg};border-color:${col2.border}">
+        <div class="fb-dscore-num" style="color:${col2.c}">${nota2!==null?nota2:'—'}</div>
+        <div class="fb-dscore-lbl" style="color:${col2.c}">Registro</div>
+      </div>
+    `;
+    mainWrap.insertBefore(dualDiv, mainWrap.firstChild);
+
+    // Replace registro section with hero + feedback
+    regWrap.innerHTML=`
+      <div class="fb-hero" style="background:${col2.bg};border:1px solid ${col2.border}">
+        <div class="fb-hero-glow" style="background:radial-gradient(circle at 50% 0%,${col2.glow},transparent 70%)"></div>
+        <div class="fb-hero-label" style="color:${col2.c}">Nota — Registro escrito</div>
+        <div class="fb-hero-num" style="color:${col2.c}">${nota2!==null?nota2:'—'}<span style="font-size:28px;opacity:.5">/10</span></div>
+        <div class="fb-hero-sub" style="color:${col2.c}">${scoreLabel(nota2)}</div>
+        <div class="fb-hero-bar"><div class="fb-hero-bar-fill" data-pct="${pct2}" style="width:0%;background:${col2.c}"></div></div>
+      </div>
+      <div class="fb-title" style="color:${col2.c}">Avaliação do registro</div>
+      <div class="fb-body">${cleanReply}</div>
+    `;
+
+    // back button
+    const backBtn=document.createElement('button'); backBtn.className='fb-back';
+    backBtn.innerHTML='← &nbsp;Voltar ao início';
+    backBtn.addEventListener('click',()=>showView('dash')); regWrap.appendChild(backBtn);
+
+    // animate bar
+    setTimeout(()=>{
+      const bar = regWrap.querySelector('.fb-hero-bar-fill');
+      if(bar) bar.style.width = bar.dataset.pct+'%';
+    }, 100);
+
+    const today=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    saveSession({paciente:fb.nomePaciente||'Paciente',especialidade:specialty,dificuldade:difficulty,data:today,nota1:fb.nota1,nota2:nota2,diagnostico:fb.diagnostico});
+    document.getElementById('chat').scrollTop=99999;
+  } catch(e) { regWrap.innerHTML=`<div style="color:#E05252;font-size:13px;padding:.5rem">⚠ Erro: ${e.message}</div>`; }
+}
+
+// ── API ──
+async function callAPI(userText, silent=false) {
+  if(isLoading) return; isLoading=true; document.getElementById('send-btn').disabled=true;
+  if(!silent) addMsg('user',userText);
+  messages.push({role:'user',content:userText}); showTyping();
+
+  const body=JSON.stringify({model:'meta/llama-3.1-70b-instruct',messages:[{role:'system',content:buildPrompt()},...messages.map(m=>({role:m.role==='assistant'?'assistant':'user',content:m.content}))],max_tokens:1024,temperature:0.7});
+
+  let data;
+  try { const r=await fetch('https://efgpiyrqfwdkabakpwhl.supabase.co/functions/v1/nvidia-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body}); data=await r.json(); }
+  catch(e){data={error:{message:e.message}};}
+
+  hideTyping();
+  if(data?.error){addErr(data.error.message);isLoading=false;document.getElementById('send-btn').disabled=false;return;}
+
+  const reply=data?.choices?.[0]?.message?.content||'';
+  messages.push({role:'assistant',content:reply});
+
+  if(reply.includes('NOTA_PERGUNTAS')){
+    showFeedback(reply);
+    document.querySelector('.inp-wrap').style.display='none';
+  } else { addMsg('patient',reply); }
+
+  isLoading=false; document.getElementById('send-btn').disabled=false;
+}
+
+async function launchSim() {
+  messages=[]; currentSessionLog=[]; sessionActive=true; pendingFeedback=null;
+  document.getElementById('sim-title').textContent=specialty;
+  document.getElementById('sim-meta').textContent=`${specialty} · ${difficulty}`;
+  document.getElementById('chat').innerHTML='';
+  document.getElementById('end-btn').style.display='';
+  document.querySelector('.inp-wrap').style.display='';
+  showView('sim');
+  const intro=document.createElement('div'); intro.className='intro-box';
+  intro.textContent=`🩺 Simulação — ${specialty} · Nível ${difficulty}\nO paciente está à sua frente. Conduza a anamnese completa. Quando terminar, toque em "Encerrar".`;
+  document.getElementById('chat').appendChild(intro);
+  await callAPI('Crie um paciente com nome completo e apresente-o brevemente (nome, idade, aparência, como está sentado) em até 3 linhas como narrador. Depois aguarde o estudante iniciar a consulta.',true);
+}
+
+async function sendMessage() {
+  const inp=document.getElementById('inp');
+  const text=inp.value.trim();
+  if(!text||isLoading||!sessionActive) return;
+  inp.value=''; inp.style.height='auto';
+  await callAPI(text);
+}
+
+document.getElementById('start-btn').addEventListener('click',launchSim);
+document.getElementById('send-btn').addEventListener('click',sendMessage);
+document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+document.getElementById('inp').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';});
+document.getElementById('end-btn').addEventListener('click',()=>{if(!sessionActive)return;callAPI('Terminamos a consulta.');});
+document.getElementById('back-btn').addEventListener('click',()=>showView('dash'));
+document.getElementById('reset-hist-btn').addEventListener('click',()=>{
+  if(confirm('Resetar histórico de pacientes?')){
+    localStorage.removeItem('anamnese_sessions');
+    renderHistory(); updateMetrics(); renderTips();
+  }
+});
+
+// ── INIT ──
+window.addEventListener('load',()=>{
+  currentChip=document.querySelector('#chips-adulto .chip');
+  if(currentChip) specialty=currentChip.dataset.esp;
+  paintAllChips(); renderHistory(); updateMetrics(); renderTips();
+});
+</script>
+</body>
+</html>
